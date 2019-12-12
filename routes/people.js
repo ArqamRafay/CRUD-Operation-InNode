@@ -25,16 +25,24 @@ router.get("/", (req, res) => {
 
 router.post("/", function (req, res) {
 
+    var _name = req.body.name
+    var _age = req.body.age
+    var _table = 'people'
 
-    const query = "insert into `people` (name, age) values (" + req.body.name + ",  " + req.body.age + ")";
-console.log( "  sa " +req.body[0].key)
+
+    // const query = "insert into `people` (" + _name + ", " + _age + ") values (" + req.body.name + ",  " + req.body.age + ")";
+    // const query = "insert into `people` (name, age) values ( qasim , 11)";
+
+    const _query = "INSERT INTO " + _table + " (name, age) VALUES ('" + _name + "', '" + _age + "' );"
+
+
     console.log("req.body.name: " + req.body.name)
-    console.log(" req.body.age: "+ req.body.age)
+    console.log(" req.body.age: " + req.body.age)
 
     // console.log("req.body: " + req.body)
     // console.log("req.body[]: " + req.body[0])
 
-    mysqlConnection.query("" + query, (err, rows, field) => {
+    mysqlConnection.query(_query, (err, rows, field) => {
         if (!err) {
 
             console.log("rows " + rows[0]);
@@ -44,12 +52,6 @@ console.log( "  sa " +req.body[0].key)
             console.log("Error: " + err);
         }
     })
-
-
-
-
-
-    
     // console.log("console.log " + req.body.name);
     // people.people.push({ name: req.body.name })
     // res.json(people);
@@ -60,7 +62,6 @@ console.log( "  sa " +req.body[0].key)
 
 // work only postmen (body) http://localhost:3000/people
 // let people = { people: [{ name: "Arqam" }] }
-
 // router.post("/", function (req, res) {
 
 //     console.log("console.log " + req.body.name);
