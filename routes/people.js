@@ -7,11 +7,10 @@ const mysqlConnection = require("../connection");
 
 // working http://localhost:3000/people
 router.get("/", (req, res) => {
-
     debugger;
     mysqlConnection.query("select * from people", (err, rows, field) => {
         if (!err) {
-            console.log("rows " + rows);
+            // res.status(200).json('Data Fetch');
             res.send(rows);
         }
         else {
@@ -20,54 +19,70 @@ router.get("/", (req, res) => {
     })
 })
 
-// testing post service
-// let people = { people: [{ name: "Arqam" }] }
+// working http://localhost:3000/people
+// router.post("/", function (req, res) {
+//     var _name = req.body.name
+//     var _age = req.body.age
+//     const _query = "INSERT INTO people (name, age) VALUES ('" + _name + "', '" + _age + "' );"
+//     mysqlConnection.query(_query, (err, rows, field) => {
+//         if (!err) {
+//             res.status(201).json('Data Inserted');
+//             res.json(rows);
+//         }
+//         else 
+//             console.log("Error: " + err);
+//     })
+// });
 
-router.post("/", function (req, res) {
 
-    var _name = req.body.name
-    var _age = req.body.age
-    var _table = 'people'
+// another way of post service good approach
+router.post("/", function (request, responce) {
 
+    let { name, age } = request.body;
+    // const requestAge = request.param.age;
 
-    // const query = "insert into `people` (" + _name + ", " + _age + ") values (" + req.body.name + ",  " + req.body.age + ")";
-    // const query = "insert into `people` (name, age) values ( qasim , 11)";
+    const _query = `INSERT INTO people (name, age) VALUES ( "${name}","${age} ")`;
 
-    const _query = "INSERT INTO " + _table + " (name, age) VALUES ('" + _name + "', '" + _age + "' );"
-
-
-    console.log("req.body.name: " + req.body.name)
-    console.log(" req.body.age: " + req.body.age)
-
-    // console.log("req.body: " + req.body)
-    // console.log("req.body[]: " + req.body[0])
-
-    mysqlConnection.query(_query, (err, rows, field) => {
-        if (!err) {
-
-            console.log("rows " + rows[0]);
-            res.send(rows);
-        }
-        else {
-            console.log("Error: " + err);
-        }
+    mysqlConnection.query(_query, function (err, result, field) {
+        if (err) throw err;
+        return responce.status(200).send(result);
     })
-    // console.log("console.log " + req.body.name);
-    // people.people.push({ name: req.body.name })
-    // res.json(people);
-    // res.end();
 });
 
 
 
-// work only postmen (body) http://localhost:3000/people
-// let people = { people: [{ name: "Arqam" }] }
-// router.post("/", function (req, res) {
+router.put("/", (request, responce) => {
+    // console.log("request.body.name: " + request.body.name)
+    // console.log("request.body.Newname: " + request.body.Newname)
+    // console.log("request.body.NewAge: " + request.body.NewAge)
 
-//     console.log("console.log " + req.body.name);
-//     people.people.push({ name: req.body.name })
-//     res.json(people);
-//     res.end();
-// });
+    const _query = "UPDATE people SET name = '" + request.body.Newname + "', age = '" + request.body.NewAge + "' WHERE name = '" + request.body.name + "';"
+    console.log(_query);
+    mysqlConnection.query(_query, (err, rows, field) => {
+        if (!err) {
+            responce.status(201).json('Data Updated');
+        }
+        else
+            console.log("Error: " + err);
+    })
+});
+
+router.delete("/", (request, responce) => {
+    const _query = "delete from people where name = '"+request.body.DeleteName+"'";
+    console.log(_query);
+    mysqlConnection.query(_query, (err, rows, field) => {
+        if (!err)
+            responce.status(200).json('Record deleted');
+        else
+            console.log(err)
+    })
+})
+
+
+// 200 — OK, The request was successful
+// 201 — CREATED, A new resource object was successfully created
+// 404 — NOT FOUND, The requested resource could not be found
+// 400 —BAD REQUEST, The request was malformed or invalid
+// 500 — INTERNAL SERVER ERROR, Unknown server error has occurred
 
 module.exports = router;
